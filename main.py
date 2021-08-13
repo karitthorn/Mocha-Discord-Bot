@@ -57,6 +57,7 @@ ffmpeg_options = {
 
 
 covidnumber = 0
+bitcoinnumber = 0
 
 #------------------------------------------------
 
@@ -88,6 +89,7 @@ async def on_message(message):
         print('send covid news')
         channel = bot.get_channel(873057668233834516) #channel id here
         covidnumber = 1
+        
         await channel.send('/covid')
         covidnumber = 1
 
@@ -126,6 +128,7 @@ async def help(ctx):   #ตั้งค่า embed
     emBed.add_field(name='=sell (ชื่อสินค้า)(จำนวน)', value='ขายสินค้า', inline=True)
     emBed.add_field(name='=send (@ผู้ใช้)(จำนวนเงิน)', value='โอนเงินไปให้ผู้เล่นคนอื่น', inline=False)
     emBed.add_field(name='=c', value='เช็คผู้ติดเชื้อโควิด', inline=False)
+    emBed.add_field(name='=bitcoinwork', value='สั่งให้เครื่องขุดbitcoinทำงาน', inline=False)
 
     emBed.set_thumbnail(url = 'https://i.pinimg.com/736x/ff/59/54/ff595428ca33c592166ac608771e2b5f.jpg')
     await ctx.channel.send(embed = emBed)
@@ -139,7 +142,10 @@ mainshop = [{"name":"watch","price":1000, "description":"⌚สำหรับ�
             {"name":"rod","price":3000, "description":"🎣ใช้ตกปลา คำสั่ง =fish"},
             {"name":"pickaxe","price":7000, "description":"⛏ สำหรับขุดเหมือง คำสั่ง =mining"},
             {"name":"macbook","price":12000, "description":"💻สามารถใช้ทำงานออนไลน์ได้ =wfh"},
-            {"name":"nintendo_switch","price":10000, "description":"🕹ชื้อไว้เท่เท่)"}]
+            {"name":"animalslot","price":59000, "description":"🎰slotสัตว์น่ารักคำสั่ง =slotam (จำนวนเงิน)"},
+            {"name":"rtx3090","price":17990, "description":"🖥เครื่องขุดbitcoin ได้วันละ 5000บาท"},
+            
+            ]
 
         
 @bot.command()
@@ -265,6 +271,7 @@ async def slot(ctx, amount = None):
 
     bal = await update_bank(ctx.author)
     amount = int(amount)
+    print("slot ",amount)
     if amount>bal[0]:
         await ctx.send("นายท่านจำนวนเงินไม่พอนะ")
         return
@@ -286,6 +293,62 @@ async def slot(ctx, amount = None):
     else:
         await update_bank(ctx.author,-1*amount)
         await ctx.send(":sob::sob:นายท่านเเพ้ ลองใหม่นะ~~")
+
+@bot.command()
+async def slotam(ctx, amount = None):
+    await open_account(ctx.author)
+
+    if amount == None:
+        await ctx.send("กรอกจำนวนเงิน")
+        return
+
+    bal = await update_bank(ctx.author)
+    amount = int(amount)
+    amountslot = amount
+
+    user = ctx.author
+    users = await get_bank_data()
+    slotrun = 0
+    try:
+        bag = users[str(user.id)]["bag"]
+    except:
+        bag = []
+
+
+    
+    for item in bag:
+        name = item["item"]
+        amount = item["amount"]
+        now = datetime.now()
+
+        if name == "animalslot" and amount == 1:
+            slotrun = 1
+
+    print(amountslot)
+    if amountslot>bal[0]:
+        await ctx.send("นายท่านจำนวนเงินไม่พอนะ")
+        return
+    if amountslot<0:
+        await ctx.send("นายท่าน อย่าล้อเล่นสิ ขอตัวเลขที่เป็นไปได้น้า")
+        return
+    final = []
+    for i in range(3):
+        a = random.choice(["🐮","🦁","🐯","🐼","🐻","🐭"])
+
+        final.append(a)
+
+    await ctx.send(str(final))
+
+    if final[0]== final[1] or final[0]== final[2]  or final[1]==final[2] :
+        if slotrun == 1:
+
+            await update_bank(ctx.author,2*amountslot)
+            await ctx.send("🏆โฮ่งโฮ่ง ชนะ!!!")
+    elif slotrun == 0:
+        await ctx.send("... นายท่านยังไม่มีไอเทมนะ")
+    else:
+        await update_bank(ctx.author,-1*amountslot)
+        await ctx.send(":🗿โดนเสือค้าบเงิน ลองใหม่นะ~~")
 
 # mainshop = [{"name":"⌚Watch","price":10000, "description":"สำหรับดูเวลา"},
 #             {"name":"💻Mac-book","price":900000, "description":"สามารถใช้ทำงานออนไลน์ได้"},
@@ -889,6 +952,59 @@ async def leaderboard(ctx,x = 3):
     await ctx.send(embed = em)
 
 @bot.command()
+@commands.cooldown(1, 1440,commands.BucketType.guild)
+async def bitcoinwork(ctx):
+
+    users = await get_bank_data()
+    leader_board = {}
+    total = []
+    for user in users:
+        print(user)
+        idbitcoin = user
+
+        try:
+            bag = users[str(user)]["bag"]
+        except:
+            bag = []
+
+        for item in bag:
+            name = item["item"]
+            amount = item["amount"]
+            
+
+            if name == "rtx3090":
+                    memberbitcoin = await bot.fetch_user(user)
+                    await open_account(memberbitcoin)
+                    
+                    
+                    users = await get_bank_data()
+
+                    user= memberbitcoin
+
+                    earnings = 5000*amount
+
+                    await ctx.send(f"bitcoin ได้ {earnings} บาท!!")
+
+                    users[str(idbitcoin)]["wallet"] += earnings
+
+            with open("mainbank.json","w") as f:
+                json.dump(users,f)
+        
+    
+    await ctx.send("เครื่องขุดbitcoinกำลังทำงาน")
+
+@bot.command()
+@bitcoinwork.error
+async def bitcoinworkerror(ctx, error):
+    if isinstance(error, commands.CommandOnCooldown):
+        em = discord.Embed(title=f"เครื่องขุดbitcoinทำงานไปเเล้ว",description=f"ต้องรอ {error.retry_after:.2f}s.")
+        await ctx.send(embed=em)
+
+
+
+
+
+@bot.command()
 async def rob(ctx,member:discord.Member):
     await open_account(ctx.author)
     await open_account(member)
@@ -1007,7 +1123,7 @@ async def pizza(ctx):
                 with open("mainbank.json","w") as f:
                     json.dump(users,f)
 @bot.command()
-async def garb(ctx):
+async def grab(ctx):
     await open_account(ctx.author)
     user = ctx.author
     users = await get_bank_data()
@@ -1077,6 +1193,6 @@ async def lineman(ctx):
 
 
 
-#####################################################
-bot.run('ODcyNDY4MjU4MDU2NDQ1OTYy.YQqTYg.KlIPkiPILaGAOyu-1XfM3nRjza8')
 
+#####################################################
+bot.run('Token')
