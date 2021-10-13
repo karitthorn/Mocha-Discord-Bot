@@ -1,4 +1,4 @@
-# Mocha economy bot
+# 🐶Mocha economy bot🐶
 (Thai language if you want another language please contact me)
 
 Mocha economy bot for discord by discord.py
