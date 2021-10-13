@@ -21,12 +21,12 @@ Mocha เป็นบอท economy bot ใช้ ภาษา python มีร�
 token from https://discord.com/developers
 (สามารถ เอา token มาจาก https://discord.com/developers)
 ##################################################
-
-  *⚪How to use*
-1. git clone 
-3. put your token to main.py (ใส่ token ลงไปใน main.py )
-4. run code and have fun ❤ (รัน code ได้เลย)
-
+>
+>  *⚪How to use*
+>1. git clone 
+>3. put your token to main.py (ใส่ token ลงไปใน main.py )
+>4. run code and have fun ❤ (รัน code ได้เลย)
+>
 ##################################################
 
 Cr. karitthorn
