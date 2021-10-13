@@ -2,7 +2,8 @@
 (Thai language if you want another language please contact me)
 
 Mocha economy bot for discord by discord.py
--money -shop -work -bitcoin 
+
+-money, -shop, -work, -bitcoin 
 
 Mocha เป็นบอท economy bot ใช้ ภาษา python มีระบบ
 
